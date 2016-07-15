@@ -48,7 +48,6 @@ class ShipCoordinatesChecks {
         try {
             temp[0]= (pressedButtonCoordI - 1);
             temp[1]= (pressedButtonCoordJ);
-            System.out.println(pressedButtonCoordI+"  "+pressedButtonCoordJ);
             north = fleet.checkThisBlockisEmpty(pressedButtonCoordI - 1, pressedButtonCoordJ);
             for (int[] value : shipCoordinate) {
                 if (value[0]==temp[0] && value[1]==temp[1]) {

@@ -4,7 +4,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 class GameField extends JFrame{
@@ -27,11 +26,7 @@ class GameField extends JFrame{
     private JPanel setupButtonsField = new JPanel();
     private SetupInteraction setupListener = new SetupInteraction();
     private GameInteraction gameListener = new GameInteraction();
-    /*private ArrayList<int[]> firstPlayerShipCoordinate = new ArrayList<>();
-    private ArrayList<int[]> secontPlayerShipCoordinate = new ArrayList<>();
-    private ArrayList<ArrayList<int[]>> detailedShipCoordinatesFirstPlayer = new ArrayList<>();
-    private ArrayList<ArrayList<int[]>> detailedShipCoordinatesSecontPlayer = new ArrayList<>();*/
-    private Fleet firstPlayerCoords,secontPlayerCoords;
+    private Fleet firstPlayerCoords, secondPlayerCoords;
 
     void initField()
     {
@@ -101,13 +96,6 @@ class GameField extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 int endOfPlacing = setupListener.getFinishShipPlacement();
 
-                //System.out.println("detailedShipCoordinatesFirstPlayer: "+detailedShipCoordinatesFirstPlayer.size());
-                //System.out.println("удаляем позицию");
-                //detailedShipCoordinatesFirstPlayer.get(0).remove(0);
-                //detailedShipCoordinatesFirstPlayer.get(4).remove(0);
-                //System.out.println("detailedShipCoordinatesFirstPlayer: "+detailedShipCoordinatesFirstPlayer.size());
-
-
                 if (endOfPlacing == 1){
                     /*try
                     {
@@ -116,8 +104,6 @@ class GameField extends JFrame{
                     catch(InterruptedException z)
                     {
                     }*/
-
-                    //ShipCoordinate = setupListener.getShipCoordinate();
                     setupField.setEnabled(false);
                     setupField.setVisible(false);
                     setupButtonsField.setEnabled(false);
@@ -142,7 +128,7 @@ class GameField extends JFrame{
                     }
                     System.out.println("");
                     System.out.print("END Secont player coords: ");
-                    for (int[] arr : secontPlayerCoords.getShipCoordinates()) {
+                    for (int[] arr : secondPlayerCoords.getShipCoordinates()) {
                         System.out.print(Arrays.toString(arr));
                     }
                     System.out.println("");
@@ -202,8 +188,8 @@ class GameField extends JFrame{
         gameListener.setGameField(this);
         computer.initAiGame();
         gameListener.setPlayerAI(computer);
-        gameListener.linkToShipCoords(firstPlayerCoords,secontPlayerCoords);
-        computer.linkToEnemyShipCoords(secontPlayerCoords);
+        gameListener.linkToShipCoords(firstPlayerCoords, secondPlayerCoords);
+        computer.linkToEnemyShipCoords(secondPlayerCoords);
     }
 
     void setFleet(Fleet temp, int side){
@@ -211,7 +197,7 @@ class GameField extends JFrame{
             firstPlayerCoords = temp;
         }
         if (side==1){
-            secontPlayerCoords = temp;
+            secondPlayerCoords = temp;
         }
     }
 }

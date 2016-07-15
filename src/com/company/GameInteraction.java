@@ -15,8 +15,8 @@ class GameInteraction implements ActionListener{
         enemyShips=tempEnemy;
     }
 
-    void setPlayerAI(PlayerAI playerAI) {
-        this.playerAI = playerAI;
+    void setPlayerAI(PlayerAI temp) {
+        this.playerAI = temp;
     }
     void setGameField(GameField gameField){
         this.gameField = gameField;

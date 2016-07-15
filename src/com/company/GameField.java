@@ -94,7 +94,6 @@ class GameField extends JFrame{
                 }
                 setupListener.resetShipCoordinate();
                 firstPlayerCoords.clearShipCoordinate();
-                secontPlayerCoords.clearShipCoordinate();
             }
         });
 

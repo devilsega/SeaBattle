@@ -53,14 +53,10 @@ class GameInteraction implements ActionListener{
             gameField.setButton(transformCoordinatesStringToInt(ClickedButton.getName())[0],transformCoordinatesStringToInt(ClickedButton.getName())[1],(byte)1,(byte)1,(byte)1);
             playerShips.deleteOneShipBlock(transformCoordinatesStringToInt(ClickedButton.getName()));
             gameField.runTheSinglePlayerGame();
-            //playerAI.playAi();
-            //gameField.setPlayerTurnEnded(side,1);
         }
         else{
             gameField.setButton(transformCoordinatesStringToInt(ClickedButton.getName())[0],transformCoordinatesStringToInt(ClickedButton.getName())[1],(byte)1,(byte)1,(byte)0);
             gameField.runTheSinglePlayerGame();
-            //playerAI.playAi();
-            //gameField.setPlayerTurnEnded(side,1);
         }
         /*if (playerShips.getShipCoordinates().size()==0){
             JOptionPane.showConfirmDialog(null,

@@ -13,7 +13,6 @@ class SetupInteraction implements ActionListener{
     private int shipCounter, endOfPlacing;
     private int shipPlacementStage = 0;
     private GameField gameField;
-    private ArrayList<int[]> detailedShipCoordinate = new ArrayList<>();
     private Fleet playerShips = new Fleet(0);
 
 
@@ -60,19 +59,14 @@ class SetupInteraction implements ActionListener{
                 playerShips.setPressedButtonCoordinates(transformCoordinatesStringToInt(ClickedButton.getName()));
                 int CanPlaceShipBlockHere =playerShips.getCanPlaceShipBlockHere(shipPlacementStage);
                 if (CanPlaceShipBlockHere==1){
-                    playerShips.addShipCoordinate();
                     ClickedButton.setEnabled(false);
                     gameField.setButton(transformCoordinatesStringToInt(ClickedButton.getName())[0],transformCoordinatesStringToInt(ClickedButton.getName())[1],(byte)0,(byte)0,(byte)0);
                     shipCounter--;
                     shipPlacementStage++;
-                    detailedShipCoordinate.add(transformCoordinatesStringToInt(ClickedButton.getName()));
                     playerShips.setShipCoordinate(transformCoordinatesStringToInt(ClickedButton.getName()), shipCounter);
                 }
             }
             if (shipCounter==0){
-                //gameField.setShipIsPlaced((byte)0);
-                //gameField.setDetailedShipCoordinates(detailedShipCoordinate,(byte)0);
-                detailedShipCoordinate.clear();
                 shipIsSelected=false;
                 shipPlacementStage=0;
                 if (playerShips.getShipCoordinates().size()==19){
@@ -96,7 +90,6 @@ class SetupInteraction implements ActionListener{
 
     void resetShipCoordinate(){
         playerShips.clearShipCoordinate();
-        detailedShipCoordinate.clear();
         shipIsSelected = false;
         shipPlacementStage=0;
     }

@@ -5,6 +5,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 class GameField extends JFrame{
 
@@ -25,8 +27,10 @@ class GameField extends JFrame{
     private JPanel setupField = new JPanel();
     private JPanel setupButtonsField = new JPanel();
     private SetupInteraction setupListener = new SetupInteraction();
-    private GameInteraction gameListener = new GameInteraction();
+    private GameInteraction gameListener = new GameInteraction(0);
     private Fleet firstPlayerCoords, secondPlayerCoords;
+    private int firstPlayerTurnEnded=0,secondPlayerTurnEnded=0;
+    private PlayerAI computer;
 
     void initField()
     {
@@ -119,19 +123,7 @@ class GameField extends JFrame{
                     computerField.setEnabled(true);
                     mainFrame.pack();
                     mainFrame.setLocationRelativeTo(null);
-
                     playerAi();
-                    System.out.println("");
-                    System.out.print("END First player coords:  ");
-                    for (int[] arr : firstPlayerCoords.getShipCoordinates()) {
-                        System.out.print(Arrays.toString(arr));
-                    }
-                    System.out.println("");
-                    System.out.print("END Secont player coords: ");
-                    for (int[] arr : secondPlayerCoords.getShipCoordinates()) {
-                        System.out.print(Arrays.toString(arr));
-                    }
-                    System.out.println("");
                 }
                 if (endOfPlacing != 1){
                         System.out.println("Can NOT start");
@@ -183,13 +175,44 @@ class GameField extends JFrame{
         }
     }
     private void playerAi(){                            //метод инициализации логики ИИ
-        PlayerAI computer = new PlayerAI();
+        computer = new PlayerAI();
         computer.setGameField(this);
         gameListener.setGameField(this);
         computer.initAiGame();
-        gameListener.setPlayerAI(computer);
+        //gameListener.setPlayerAI(computer);
         gameListener.linkToShipCoords(firstPlayerCoords, secondPlayerCoords);
-        computer.linkToEnemyShipCoords(secondPlayerCoords);
+        computer.linkToEnemyShipCoords(firstPlayerCoords);
+
+        System.out.println("");
+        System.out.println("END First player coords:  ");
+        /*for (int[] arr : firstPlayerCoords.getShipCoordinates()) {
+            System.out.print(Arrays.toString(arr));
+        }*/
+        for (ArrayList<int[]> arr : firstPlayerCoords.getDetailedShipCoordinates()) {
+            for(int[] zzz : arr){
+                //System.out.print(zzz[0]+""+zzz[1]);
+                System.out.print(Arrays.toString(zzz));
+            }System.out.println("");
+        }
+
+        System.out.println("");
+        System.out.println("END Secont player coords: ");
+        /*for (int[] arr : secondPlayerCoords.getShipCoordinates()) {
+            System.out.print(Arrays.toString(arr));
+        }
+        System.out.println("");*/
+        for (ArrayList<int[]> arr : secondPlayerCoords.getDetailedShipCoordinates()) {
+            for(int[] zzz : arr){
+                //System.out.print(zzz[0]+""+zzz[1]);
+                System.out.print(Arrays.toString(zzz));
+            }System.out.println("");
+        }
+
+    }
+
+    void runTheSinglePlayerGame(){                      //метод процесса игры
+        boolean gameEnded=false;
+        computer.playAi();
     }
 
     void setFleet(Fleet temp, int side){

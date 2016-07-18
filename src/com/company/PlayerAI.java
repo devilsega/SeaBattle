@@ -31,18 +31,17 @@ class PlayerAI {
             shipPlacementStage = 0;
             for (int value : shipCounter){
                 for (int a=value; a>0; a--){
-                    setupAi();
+                    setupAi(a-1);
                     shipPlacementStage++;
                     if (a==1)shipPlacementStage=0;
                 }
-                //if (aiShipCoordinates.size()==19)System.out.println("конец размещения");
             }
         }
         while (resetShipPlacement);
-        drawShips();                  //сервисный метод, чтоб визуально убедиться, что ИИ разместил кораблики верно.
+        //drawShips();                  //сервисный метод, чтоб визуально убедиться, что ИИ разместил кораблики верно.
     }
 
-    private void setupAi() {
+    private void setupAi(int shipBlockCounter) {
         boolean coordIsSet = false;
         int CanPlaceShipBlockHere;
         int[] tempRand = new int[2];
@@ -50,7 +49,6 @@ class PlayerAI {
         ArrayList<int[]> avaibleOptions = new ArrayList<>();
 
             while (!coordIsSet) {
-                //System.out.println("START");
                 int randI = random.nextInt(10);
                 int randJ = random.nextInt(10);
                 tempRand[0]=randI;
@@ -62,9 +60,7 @@ class PlayerAI {
                         aiShips.setPressedButtonCoordinates(tempRand);
                         CanPlaceShipBlockHere = aiShips.getCanPlaceShipBlockHere(shipPlacementStage);
                         if (CanPlaceShipBlockHere == 1) {
-                            aiShips.addShipCoordinate();
-                            //aiShipCoordinates.add(tempRand);
-                            aiShips.setShipCoordinate(tempRand);
+                            aiShips.setShipCoordinate(tempRand,shipBlockCounter);
                             coordIsSet = true;
                         }
                     }
@@ -88,9 +84,7 @@ class PlayerAI {
                         if (avaibleOptions.size() > 0) {
                             int rand = random.nextInt(avaibleOptions.size());
                             aiShips.setPressedButtonCoordinates(avaibleOptions.get(rand));
-                            aiShips.addShipCoordinate();
-                            //aiShipCoordinates.add(avaibleOptions.get(rand));
-                            aiShips.setShipCoordinate(avaibleOptions.get(rand));
+                            aiShips.setShipCoordinate(avaibleOptions.get(rand),shipBlockCounter);
                             coordIsSet = true;
                         }
                         if (avaibleOptions.size()==0){
@@ -118,18 +112,6 @@ class PlayerAI {
             for (int a=0;a<enemyShips.getShipCoordinates().size();a++){
                 if (enemyShips.getShipCoordinates().get(a)[0]==temp[0] && enemyShips.getShipCoordinates().get(a)[1]==temp[1]) {
                     repeat=1;
-                    System.out.println("");
-                    System.out.print("First player coords: ");
-                    for (int[] arr : enemyShips.getShipCoordinates()) {
-                        System.out.print(Arrays.toString(arr));
-                    }
-                    System.out.println("");
-                    System.out.println("");
-                    System.out.print("Secont player coords: ");
-                    for (int[] arr : aiShips.getShipCoordinates()) {
-                        System.out.print(Arrays.toString(arr));
-                    }
-                    System.out.println("");
                 }
             }
         }
@@ -150,6 +132,19 @@ class PlayerAI {
     }
 
     void playAi(){
+        System.out.println("ходит ИИ!");
+        System.out.println("");
+        System.out.print("First player coords: ");
+        for (int[] arr : enemyShips.getShipCoordinates()) {
+            System.out.print(Arrays.toString(arr));
+        }
+        System.out.println("");
+        System.out.println("");
+        System.out.print("Secont player coords: ");
+        for (int[] arr : aiShips.getShipCoordinates()) {
+            System.out.print(Arrays.toString(arr));
+        }
+        System.out.println("");
         Random random = new Random();
         boolean endOfTurn=false;
         int[] rand = new int[2];

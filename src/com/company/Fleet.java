@@ -20,30 +20,36 @@ public class Fleet {
         gameField.setFleet(this,side);
     }
 
-    void setShipCoordinate (int[] coord){
+    /*void setShipCoordinate (int[] coord){
         shipCoordinates.add(coord);
-    }
+    }*/
 
-    void setShipCoordinate (int[] coord, int stage){
+    void setShipCoordinate (int[] coord, int shipBlockCounter){
+        shipCoordinatesChecks.addShipCoordinate();
         shipCoordinates.add(coord);
         tempShipCoordinate.add(coord);
-        /*if (stage==0){
-            detailedShipCoordinates.add(tempShipCoordinate);
-            tempShipCoordinate.clear();
-
-            for (int i=0;i<detailedShipCoordinates.size();i++) {
-                //System.out.println(detailedShipCoordinates.get(i).size());
+        if (shipBlockCounter==0){
+            ArrayList <int[]>temp = new ArrayList<>();
+            for (int[] m:tempShipCoordinate){
+                temp.add(m);
             }
-        }*/
+            detailedShipCoordinates.add(temp);
+            tempShipCoordinate.clear();
+        }
     }
 
     void clearShipCoordinate (){
         shipCoordinates.clear();
         detailedShipCoordinates.clear();
+        tempShipCoordinate.clear();
     }
 
     ArrayList<int[]> getShipCoordinates(){
         return shipCoordinates;
+    }
+
+    ArrayList<ArrayList<int[]>>getDetailedShipCoordinates (){
+        return detailedShipCoordinates;
     }
 
     void deleteOneShipBlock (int[] coord){
@@ -78,8 +84,5 @@ public class Fleet {
     }
     int getCanPlaceShipBlockHere (int shipPlacementStage){
         return shipCoordinatesChecks.getCanPlaceShipBlockHere(shipPlacementStage);
-    }
-    void addShipCoordinate(){
-        shipCoordinatesChecks.addShipCoordinate();
     }
 }

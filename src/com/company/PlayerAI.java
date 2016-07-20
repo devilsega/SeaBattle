@@ -5,7 +5,6 @@ import java.util.Random;
 import java.util.ArrayList;
 
 class PlayerAI {
-    //private ArrayList<int[]>aiShipCoordinates = new ArrayList<>();
     private ArrayList<int[]>usedCoordinates = new ArrayList<>();
     private int shipPlacementStage;
     private GameField gameField;
@@ -26,7 +25,6 @@ class PlayerAI {
         aiShips.setGameField(gameField);
         do {
             resetShipPlacement=false;
-            //aiShipCoordinates.clear();
             aiShips.clearShipCoordinate();
             shipPlacementStage = 0;
             for (int value : shipCounter){
@@ -38,7 +36,7 @@ class PlayerAI {
             }
         }
         while (resetShipPlacement);
-        //drawShips();                  //сервисный метод, чтоб визуально убедиться, что ИИ разместил кораблики верно.
+        drawShips();                  //сервисный метод, чтоб визуально убедиться, что ИИ разместил кораблики верно.
     }
 
     private void setupAi(int shipBlockCounter) {
@@ -65,7 +63,7 @@ class PlayerAI {
                         }
                     }
                     if (shipPlacementStage > 0 && repeat == 0) {
-                        for (int[] value : aiShips.getShipCoordinates()) {
+                        /*for (int[] value : aiShips.getShipCoordinates()) {
                             for (int a = -1; a < 2; a++) {
                                 for (int b = -1; b < 2; b++) {
                                     if ((value[0] + a)>=0 && (value[1] + b)>=0){
@@ -80,7 +78,28 @@ class PlayerAI {
                                     }
                                 }
                             }
+                        }*/
+                        for (ArrayList<int[]> ship:aiShips.getDetailedShipCoordinates()){
+                            for(int[] value:ship){
+                                for (int a = -1; a < 2; a++) {
+                                    for (int b = -1; b < 2; b++) {
+                                        if ((value[0] + a)>=0 && (value[1] + b)>=0){
+                                            int[] temp = new int[2];
+                                            temp[0]=value[0] + a;
+                                            temp[1]=value[1] + b;
+                                            aiShips.setPressedButtonCoordinates(temp);
+                                            CanPlaceShipBlockHere = aiShips.getCanPlaceShipBlockHere(shipPlacementStage);
+                                            if (CanPlaceShipBlockHere == 1 && checkIfCoordinateIsUnique(temp,(byte)0) == 0){
+                                                avaibleOptions.add(temp);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
+
+
+
                         if (avaibleOptions.size() > 0) {
                             int rand = random.nextInt(avaibleOptions.size());
                             aiShips.setPressedButtonCoordinates(avaibleOptions.get(rand));
@@ -102,18 +121,21 @@ class PlayerAI {
         int repeat=0;
 
         if (side==0){
-            for (int i = 0; i < aiShips.getShipCoordinates().size(); i++) {
+            /*for (int i = 0; i < aiShips.getShipCoordinates().size(); i++) {
                 if (aiShips.getShipCoordinates().get(i)[0]==temp[0] && aiShips.getShipCoordinates().get(i)[1]==temp[1]) {
                     repeat=1;
                 }
-            }
+            }*/
+            if (aiShips.checkThisBlockisEmpty(temp[0],temp[1])==1)repeat=1;
+
         }
         if (side==1){
-            for (int a=0;a<enemyShips.getShipCoordinates().size();a++){
+            /*for (int a=0;a<enemyShips.getShipCoordinates().size();a++){
                 if (enemyShips.getShipCoordinates().get(a)[0]==temp[0] && enemyShips.getShipCoordinates().get(a)[1]==temp[1]) {
                     repeat=1;
                 }
-            }
+            }*/
+            if (enemyShips.checkThisBlockisEmpty(temp[0],temp[1])==1)repeat=1;
         }
         if (side==2) {
             for (int a=0;a<usedCoordinates.size();a++){
@@ -126,25 +148,19 @@ class PlayerAI {
     }
 
     private void drawShips(){
-        for (int[] value:aiShips.getShipCoordinates()){
+        /*for (int[] value:aiShips.getShipCoordinates()){
             gameField.setButton(value[0],value[1],(byte)1,(byte)0,(byte)0);
+        }*/
+        for (ArrayList<int[]> ship:aiShips.getDetailedShipCoordinates()){
+            for(int[] shipBlock:ship){
+                gameField.setButton(shipBlock[0],shipBlock[1],(byte)1,(byte)0,(byte)0);
+            }
         }
     }
 
     void playAi(){
         System.out.println("ходит ИИ!");
-        System.out.println("");
-        System.out.print("First player coords: ");
-        for (int[] arr : enemyShips.getShipCoordinates()) {
-            System.out.print(Arrays.toString(arr));
-        }
-        System.out.println("");
-        System.out.println("");
-        System.out.print("Secont player coords: ");
-        for (int[] arr : aiShips.getShipCoordinates()) {
-            System.out.print(Arrays.toString(arr));
-        }
-        System.out.println("");
+
         Random random = new Random();
         boolean endOfTurn=false;
         int[] rand = new int[2];
@@ -169,5 +185,24 @@ class PlayerAI {
                 }
             }
         }
+
+
+
+        System.out.println("Player ships:");
+        for (ArrayList<int[]> arr : enemyShips.getDetailedShipCoordinates()) {
+            for(int[] zzz : arr){
+                System.out.print(Arrays.toString(zzz));
+            }System.out.println("");
+        }
+
+        System.out.println("AI ships:");
+        for (ArrayList<int[]> arr : aiShips.getDetailedShipCoordinates()) {
+            for(int[] zzz : arr){
+                System.out.print(Arrays.toString(zzz));
+            }System.out.println("");
+        }
+
+
+
     }
 }

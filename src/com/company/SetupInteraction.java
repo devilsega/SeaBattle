@@ -64,12 +64,22 @@ class SetupInteraction implements ActionListener{
                     shipCounter--;
                     shipPlacementStage++;
                     playerShips.setShipCoordinate(transformCoordinatesStringToInt(ClickedButton.getName()), shipCounter);
+
+                    for (ArrayList<int[]> arr : playerShips.getDetailedShipCoordinates()) {
+                        for(int[] zzz : arr){
+                            //System.out.print(zzz[0]+""+zzz[1]);
+                            System.out.print(Arrays.toString(zzz));
+                        }System.out.println("");
+                    }
+
+
                 }
             }
             if (shipCounter==0){
                 shipIsSelected=false;
                 shipPlacementStage=0;
-                if (playerShips.getShipCoordinates().size()==19){
+                //if (playerShips.getShipCoordinates().size()==19){
+                if (playerShips.getSize()==19){
                     endOfPlacing=1;
                 }
             }

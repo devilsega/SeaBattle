@@ -30,28 +30,13 @@ class GameInteraction implements ActionListener{
 
     public void actionPerformed(ActionEvent e) {
         JButton ClickedButton;
-
         ClickedButton = (JButton) e.getSource();
 
         System.out.println("хожу я!");
-        System.out.println("");
-        System.out.print("First player coords: ");
-        for (int[] arr : playerShips.getShipCoordinates()) {
-            System.out.print(Arrays.toString(arr));
-        }
-        System.out.println("");
-        System.out.println("");
-        System.out.print("Secont player coords: ");
-        for (int[] arr : enemyShips.getShipCoordinates()) {
-            System.out.print(Arrays.toString(arr));
-        }
-        System.out.println("");
-
-
-
         if (checkIfEnemyShipIsHit(transformCoordinatesStringToInt(ClickedButton.getName()))==1){
+            System.out.println("HIT!");
             gameField.setButton(transformCoordinatesStringToInt(ClickedButton.getName())[0],transformCoordinatesStringToInt(ClickedButton.getName())[1],(byte)1,(byte)1,(byte)1);
-            playerShips.deleteOneShipBlock(transformCoordinatesStringToInt(ClickedButton.getName()));
+            enemyShips.deleteOneShipBlock(transformCoordinatesStringToInt(ClickedButton.getName()));
             gameField.runTheSinglePlayerGame();
         }
         else{
@@ -74,7 +59,7 @@ class GameInteraction implements ActionListener{
     }
 
     private int checkIfEnemyShipIsHit(int[] temp) {
-        ArrayList <int[]> enemyCords;
+        /*ArrayList <int[]> enemyCords;
         enemyCords=enemyShips.getShipCoordinates();
         int hit=0;
         for (int i = 0; i < enemyCords.size(); i++) {
@@ -82,6 +67,7 @@ class GameInteraction implements ActionListener{
                 hit=1;
             }
         }
-        return hit;
+        return hit;*/
+        return enemyShips.checkThisBlockisEmpty(temp[0],temp[1]);
     }
 }

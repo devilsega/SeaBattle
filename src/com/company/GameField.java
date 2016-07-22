@@ -173,6 +173,12 @@ class GameField extends JFrame{
             enemyArray[i][j].setEnabled(false);
             enemyArray[i][j].setBackground(Color.red);
         }
+        if (side==0 && stage==2){
+            playerArray[i][j].setBackground(Color.black);
+        }
+        if (side==1 && stage==2){
+            enemyArray[i][j].setBackground(Color.black);
+        }
     }
     private void playerAi(){                            //метод инициализации логики ИИ
         computer = new PlayerAI();
@@ -185,9 +191,6 @@ class GameField extends JFrame{
 
         System.out.println("");
         System.out.println("END First player coords:  ");
-        /*for (int[] arr : firstPlayerCoords.getShipCoordinates()) {
-            System.out.print(Arrays.toString(arr));
-        }*/
         for (ArrayList<int[]> arr : firstPlayerCoords.getDetailedShipCoordinates()) {
             for(int[] zzz : arr){
                 //System.out.print(zzz[0]+""+zzz[1]);
@@ -197,10 +200,6 @@ class GameField extends JFrame{
 
         System.out.println("");
         System.out.println("END Secont player coords: ");
-        /*for (int[] arr : secondPlayerCoords.getShipCoordinates()) {
-            System.out.print(Arrays.toString(arr));
-        }
-        System.out.println("");*/
         for (ArrayList<int[]> arr : secondPlayerCoords.getDetailedShipCoordinates()) {
             for(int[] zzz : arr){
                 //System.out.print(zzz[0]+""+zzz[1]);

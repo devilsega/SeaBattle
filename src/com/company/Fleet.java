@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Fleet {
-    //private ArrayList<int[]> shipCoordinates = new ArrayList<>();
-    private ArrayList<int[]> tempShipCoordinate = new ArrayList<>();
     private ArrayList<ArrayList<int[]>> detailedShipCoordinates = new ArrayList<>();
     private ShipCoordinatesChecks shipCoordinatesChecks = new ShipCoordinatesChecks();
     private GameField gameField;
@@ -22,10 +20,6 @@ public class Fleet {
         gameField.setFleet(this,side);
     }
 
-    /*void setShipCoordinate (int[] coord){
-        shipCoordinates.add(coord);
-    }*/
-
     void setShipCoordinate (int[] coord, int shipBlockCounter){
         boolean coordIsSet = false;
         ArrayList<int[]> tempShipBlock = new ArrayList<>();
@@ -34,51 +28,34 @@ public class Fleet {
             detailedShipCoordinates.add(tempShipBlock);
             isFirstCoord=false;
             coordIsSet=true;
+            shipCoordinatesChecks.addShipCoordinate();
         }
         if (shipBlockCounter!=0 && !coordIsSet){
             detailedShipCoordinates.get(ship).add(tempShipBlock.get(0));
             coordIsSet=true;
+            shipCoordinatesChecks.addShipCoordinate();
         }
         if (shipBlockCounter==0 && !coordIsSet){
             detailedShipCoordinates.get(ship).add(tempShipBlock.get(0));
             ship++;
             coordIsSet=true;
             isFirstCoord=true;
+            shipCoordinatesChecks.addShipCoordinate();
         }
-
-        /*shipCoordinatesChecks.addShipCoordinate();
-        //shipCoordinates.add(coord);
-        tempShipCoordinate.add(coord);
-        if (shipBlockCounter==0){
-            ArrayList <int[]>temp = new ArrayList<>();
-            for (int[] m:tempShipCoordinate){
-                temp.add(m);
-            }
-            detailedShipCoordinates.add(temp);
-            tempShipCoordinate.clear();
-        }*/
     }
 
     void clearShipCoordinate (){
-        //shipCoordinates.clear();
         detailedShipCoordinates.clear();
-        tempShipCoordinate.clear();
+        isFirstCoord=true;
+        ship=0;
     }
-
-    /*ArrayList<int[]> getShipCoordinates(){
-        return shipCoordinates;
-    }*/
 
     ArrayList<ArrayList<int[]>>getDetailedShipCoordinates (){
         return detailedShipCoordinates;
     }
 
-    void deleteOneShipBlock (int[] coord){
-        /*for (int i = 0; i < shipCoordinates.size(); i++) {
-            if (shipCoordinates.get(i)[0]==coord[0] && shipCoordinates.get(i)[1]==coord[1]) {
-                shipCoordinates.remove(i);
-            }
-        }*/
+    int deleteOneShipBlock (int[] coord){
+        int shipIsDestroyed=0;
         for (ArrayList<int[]>ship:detailedShipCoordinates){
             for (int i = 0; i < ship.size(); i++) {
                 if(ship.get(i)[0] ==coord[0] && ship.get(i)[1]==coord[1]){
@@ -89,8 +66,10 @@ public class Fleet {
         for (int i=0;i<detailedShipCoordinates.size();i++){
             if (detailedShipCoordinates.get(i).size()<1){
                 detailedShipCoordinates.remove(i);
+                shipIsDestroyed=1;
             }
         }
+        return shipIsDestroyed;
     }
 
     int checkThisBlockisEmpty(int i, int j){                                //if 1 => занято, if 0 => пусто
@@ -103,11 +82,6 @@ public class Fleet {
             result=1;
         }
         if (!outOfBounds){
-            /*for (int a = 0; a < shipCoordinates.size(); a++) {
-                if (temp[0] == shipCoordinates.get(a)[0] && temp[1] == shipCoordinates.get(a)[1]) {
-                    result = 1;
-                }
-            }*/
             for (ArrayList<int[]>ship:detailedShipCoordinates) {
                 for (int a = 0; a < ship.size(); a++) {
                     if (ship.get(a)[0] == temp[0] && ship.get(a)[1] == temp[1]) {

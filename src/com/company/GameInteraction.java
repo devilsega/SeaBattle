@@ -3,7 +3,6 @@ package com.company;
 import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 class GameInteraction implements ActionListener{
@@ -21,9 +20,6 @@ class GameInteraction implements ActionListener{
         enemyShips=tempEnemy;
     }
 
-    /*void setPlayerAI(PlayerAI temp) {
-        this.playerAI = temp;
-    }*/
     void setGameField(GameField gameField){
         this.gameField = gameField;
     }
@@ -59,15 +55,6 @@ class GameInteraction implements ActionListener{
     }
 
     private int checkIfEnemyShipIsHit(int[] temp) {
-        /*ArrayList <int[]> enemyCords;
-        enemyCords=enemyShips.getShipCoordinates();
-        int hit=0;
-        for (int i = 0; i < enemyCords.size(); i++) {
-            if (enemyCords.get(i)[0]==temp[0] && enemyCords.get(i)[1]==temp[1]) {
-                hit=1;
-            }
-        }
-        return hit;*/
         return enemyShips.checkThisBlockisEmpty(temp[0],temp[1]);
     }
 }

@@ -1,11 +1,8 @@
 package com.company;
 
-import java.awt.*;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 class SetupInteraction implements ActionListener{
 
@@ -14,8 +11,6 @@ class SetupInteraction implements ActionListener{
     private int shipPlacementStage = 0;
     private GameField gameField;
     private Fleet playerShips = new Fleet(0);
-
-
 
     public void actionPerformed(ActionEvent e) {
         JButton ClickedButton;
@@ -69,7 +64,6 @@ class SetupInteraction implements ActionListener{
             if (shipCounter==0){
                 shipIsSelected=false;
                 shipPlacementStage=0;
-                //if (playerShips.getShipCoordinates().size()==19){
                 if (playerShips.getSize()==19){
                     endOfPlacing=1;
                 }

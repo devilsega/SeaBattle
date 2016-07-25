@@ -15,7 +15,7 @@ class GameField extends JFrame{
     private String [] shipNamesRu = {"5-палубный","4-палубный","3-палубный","3-палубный","2-палубный","2-палубный"};
     private String [] shipNamesEn = {"fiveDeck1","fourDeck1","threeDeck1","threeDeck2","twoDeck1","twoDeck2"};
     private JButton [] ship = new JButton[6];
-    private JFrame mainFrame = new JFrame("Морской Бой v.0.1");
+    private JFrame mainFrame = new JFrame("Морской Бой v.0.5");
     private FlowLayout fl = new FlowLayout(FlowLayout.LEADING, 5, 5);
     private GridLayout gl = new GridLayout(10, 10);
     private GridBagLayout gbl = new GridBagLayout();
@@ -29,8 +29,8 @@ class GameField extends JFrame{
     private SetupInteraction setupListener = new SetupInteraction();
     private GameInteraction gameListener = new GameInteraction(0);
     private Fleet firstPlayerCoords, secondPlayerCoords;
-    private int firstPlayerTurnEnded=0,secondPlayerTurnEnded=0;
     private PlayerAI computer;
+    private boolean gameEnded=false;
 
     void initField()
     {
@@ -125,9 +125,9 @@ class GameField extends JFrame{
                     mainFrame.setLocationRelativeTo(null);
                     playerAi();
                 }
-                if (endOfPlacing != 1){
+                /*if (endOfPlacing != 1){
                         System.out.println("Can NOT start");
-                }
+                }*/
             }
         });
 
@@ -185,15 +185,13 @@ class GameField extends JFrame{
         computer.setGameField(this);
         gameListener.setGameField(this);
         computer.initAiGame();
-        //gameListener.setPlayerAI(computer);
         gameListener.linkToShipCoords(firstPlayerCoords, secondPlayerCoords);
         computer.linkToEnemyShipCoords(firstPlayerCoords);
 
-        System.out.println("");
+        /*System.out.println("");
         System.out.println("END First player coords:  ");
         for (ArrayList<int[]> arr : firstPlayerCoords.getDetailedShipCoordinates()) {
             for(int[] zzz : arr){
-                //System.out.print(zzz[0]+""+zzz[1]);
                 System.out.print(Arrays.toString(zzz));
             }System.out.println("");
         }
@@ -202,16 +200,15 @@ class GameField extends JFrame{
         System.out.println("END Secont player coords: ");
         for (ArrayList<int[]> arr : secondPlayerCoords.getDetailedShipCoordinates()) {
             for(int[] zzz : arr){
-                //System.out.print(zzz[0]+""+zzz[1]);
                 System.out.print(Arrays.toString(zzz));
             }System.out.println("");
-        }
-
+        }*/
     }
 
     void runTheSinglePlayerGame(){                      //метод процесса игры
-        boolean gameEnded=false;
-        computer.playAi();
+        if (!gameEnded){
+            computer.playAi();
+        }
     }
 
     void setFleet(Fleet temp, int side){
@@ -221,5 +218,18 @@ class GameField extends JFrame{
         if (side==1){
             secondPlayerCoords = temp;
         }
+    }
+
+    void setGameEnded(){
+        for (int i=0; i<10; i++){
+            for (int j=0; j<10; j++){
+                playerArray[i][j].setEnabled(false);
+                enemyArray[i][j].setEnabled(false);
+            }
+        }
+        gameEnded=true;
+    }
+    boolean getGameEnded(){
+        return gameEnded;
     }
 }

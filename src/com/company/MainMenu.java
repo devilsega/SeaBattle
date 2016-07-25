@@ -8,7 +8,7 @@ import java.awt.event.ActionListener;
 class MainMenu extends JFrame{
 
     void initMenu(){
-        JFrame mainFrame = new JFrame("Морской Бой v.0.1");
+        JFrame mainFrame = new JFrame("Морской Бой v.0.5");
         GridLayout gl = new GridLayout(3,1);
         FlowLayout fl = new FlowLayout();
         JPanel mainMenu = new JPanel();

@@ -3,13 +3,13 @@ package com.company;
 import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.util.Arrays;
+import java.util.ArrayList;
 
 class GameInteraction implements ActionListener{
-    //private PlayerAI playerAI;
     private GameField gameField;
     private Fleet playerShips,enemyShips;
     private int side;
+    private ArrayList<int[]> damagedShipCoordinates = new ArrayList<>();
 
     GameInteraction(int temp){
         side = temp;
@@ -25,25 +25,33 @@ class GameInteraction implements ActionListener{
     }
 
     public void actionPerformed(ActionEvent e) {
-        JButton ClickedButton;
-        ClickedButton = (JButton) e.getSource();
-
-        System.out.println("хожу я!");
-        if (checkIfEnemyShipIsHit(transformCoordinatesStringToInt(ClickedButton.getName()))==1){
-            System.out.println("HIT!");
-            gameField.setButton(transformCoordinatesStringToInt(ClickedButton.getName())[0],transformCoordinatesStringToInt(ClickedButton.getName())[1],(byte)1,(byte)1,(byte)1);
-            enemyShips.deleteOneShipBlock(transformCoordinatesStringToInt(ClickedButton.getName()));
-            gameField.runTheSinglePlayerGame();
+        if (!gameField.getGameEnded()){
+            JButton ClickedButton;
+            ClickedButton = (JButton) e.getSource();
+            if (checkIfEnemyShipIsHit(transformCoordinatesStringToInt(ClickedButton.getName()))==1){                                //hit
+                gameField.setButton(transformCoordinatesStringToInt(ClickedButton.getName())[0],transformCoordinatesStringToInt(ClickedButton.getName())[1],(byte)1,(byte)1,(byte)1);
+                int[]temp={transformCoordinatesStringToInt(ClickedButton.getName())[0],transformCoordinatesStringToInt(ClickedButton.getName())[1]};
+                damagedShipCoordinates.add(temp);
+                int shipIsDestroyed = enemyShips.deleteOneShipBlock(transformCoordinatesStringToInt(ClickedButton.getName()));
+                if (shipIsDestroyed==1){
+                    for (int[] value:damagedShipCoordinates){
+                        gameField.setButton(value[0],value[1],1,2,1);
+                    }
+                    damagedShipCoordinates.clear();
+                }
+                gameField.runTheSinglePlayerGame();
+            }
+            else{
+                gameField.setButton(transformCoordinatesStringToInt(ClickedButton.getName())[0],transformCoordinatesStringToInt(ClickedButton.getName())[1],(byte)1,(byte)1,(byte)0);       //miss
+                gameField.runTheSinglePlayerGame();
+            }
+            if (enemyShips.getSize()<1){
+                gameField.setGameEnded();
+                JOptionPane.showMessageDialog(null,
+                        "Победил игрок 1", "Конец игры",
+                        JOptionPane.PLAIN_MESSAGE);
+            }
         }
-        else{
-            gameField.setButton(transformCoordinatesStringToInt(ClickedButton.getName())[0],transformCoordinatesStringToInt(ClickedButton.getName())[1],(byte)1,(byte)1,(byte)0);
-            gameField.runTheSinglePlayerGame();
-        }
-        /*if (playerShips.getShipCoordinates().size()==0){
-            JOptionPane.showConfirmDialog(null,
-                    "Победил игрок 1", "Конец игры",
-                    JOptionPane.PLAIN_MESSAGE);
-        }*/
     }
 
     private int[] transformCoordinatesStringToInt (String temp){

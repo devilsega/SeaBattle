@@ -1,7 +1,6 @@
 package com.company;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Fleet {
     private ArrayList<ArrayList<int[]>> detailedShipCoordinates = new ArrayList<>();

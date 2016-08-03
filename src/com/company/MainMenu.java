@@ -21,8 +21,7 @@ class MainMenu extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 mainMenu.setVisible(false);
                 mainFrame.dispose();
-                GameField MainGame = new GameField();
-                MainGame.initField();
+                GameField MainGame = new GameField(0);
             }
         });
 

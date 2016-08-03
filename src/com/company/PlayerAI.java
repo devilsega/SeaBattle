@@ -8,12 +8,18 @@ class PlayerAI {
     private ArrayList<int[]>usedCoordinates = new ArrayList<>();
     private ArrayList<int[]>damagedShipCoordinates = new ArrayList<>();
     private int shipPlacementStage;
+    private int side;
     private GameField gameField;
-    private Fleet aiShips = new Fleet(1);
+    private Fleet aiShips;
     private Fleet enemyShips;
     private int[]shipCounter = {5,4,3,3,2,2};
     private boolean resetShipPlacement, shipIsHit;
     private int shipHits=0;
+
+    PlayerAI (int temp){
+        side=temp;
+        aiShips = new Fleet(side);
+    }
 
     void setGameField(GameField gameField){
         this.gameField=gameField;
@@ -53,7 +59,7 @@ class PlayerAI {
                 int randJ = random.nextInt(10);
                 tempRand[0]=randI;
                 tempRand[1]=randJ;
-                int repeat = checkIfCoordinateIsUnique(tempRand,(byte)0);
+                int repeat = checkIfCoordinateIsUnique(tempRand,0);
 
                 if (!resetShipPlacement){
                     if (shipPlacementStage == 0 && repeat == 0) {                                        //выставление первой координаты.
@@ -75,7 +81,7 @@ class PlayerAI {
                                             temp[1]=value[1] + b;
                                             aiShips.setPressedButtonCoordinates(temp);
                                             CanPlaceShipBlockHere = aiShips.getCanPlaceShipBlockHere(shipPlacementStage);
-                                            if (CanPlaceShipBlockHere == 1 && checkIfCoordinateIsUnique(temp,(byte)0) == 0){
+                                            if (CanPlaceShipBlockHere == 1 && checkIfCoordinateIsUnique(temp,0) == 0){
                                                 avaibleOptions.add(temp);
                                             }
                                         }
@@ -100,7 +106,7 @@ class PlayerAI {
             }
         }
 
-    private int checkIfCoordinateIsUnique(int[]temp, byte side) {
+    private int checkIfCoordinateIsUnique(int[]temp, int side) {
         int repeat=0;
 
         if (side==0){
@@ -155,6 +161,8 @@ class PlayerAI {
     }
 
     void playAi(){
+        boolean aiTurnIsGoing = true;
+        gameField.setTurnState(aiTurnIsGoing,side);
         Random random = new Random();
         boolean endOfTurn=false;
         int[] rand = new int[2];
@@ -164,8 +172,8 @@ class PlayerAI {
             int randJ = random.nextInt(10);
             rand[0]=randI;
             rand[1]=randJ;
-            if (checkIfCoordinateIsUnique(rand,(byte)2)==0 && !shipIsHit){                      //попытка попасть в НОВЫЙ корабль
-                if (checkIfCoordinateIsUnique(rand,(byte)1)==1){                                //hit
+            if (checkIfCoordinateIsUnique(rand,2)==0 && !shipIsHit){                      //попытка попасть в НОВЫЙ корабль
+                if (checkIfCoordinateIsUnique(rand,1)==1){                                //hit
                     gameField.setButton(rand[0],rand[1],0,1,1);
                     enemyShips.deleteOneShipBlock(rand);
                     usedCoordinates.add(rand);
@@ -174,7 +182,7 @@ class PlayerAI {
                     damagedShipCoordinates.add(rand);
                     shipHits++;
                 }
-                if (checkIfCoordinateIsUnique(rand,(byte)1)==0 && !endOfTurn){                  //miss
+                if (checkIfCoordinateIsUnique(rand,1)==0 && !endOfTurn){                  //miss
                     gameField.setButton(rand[0],rand[1],0,1,0);
                     usedCoordinates.add(rand);
                     endOfTurn=true;
@@ -191,8 +199,8 @@ class PlayerAI {
                 avaibleOptions.add(option4);
                 int randOption = random.nextInt(4);
                 if (avaibleOptions.get(randOption)[0]>=0 && avaibleOptions.get(randOption)[1]>=0 && avaibleOptions.get(randOption)[0]<10 && avaibleOptions.get(randOption)[1]<10){
-                    if (checkIfCoordinateIsUnique(avaibleOptions.get(randOption),(byte)2)==0){
-                        if (checkIfCoordinateIsUnique(avaibleOptions.get(randOption),(byte)1)==1){                                          //hit
+                    if (checkIfCoordinateIsUnique(avaibleOptions.get(randOption),2)==0){
+                        if (checkIfCoordinateIsUnique(avaibleOptions.get(randOption),1)==1){                                          //hit
                             gameField.setButton(avaibleOptions.get(randOption)[0],avaibleOptions.get(randOption)[1],0,1,1);
                             damagedShipCoordinates.add(avaibleOptions.get(randOption));
                             int shipIsDestroyed = enemyShips.deleteOneShipBlock(avaibleOptions.get(randOption));
@@ -202,6 +210,7 @@ class PlayerAI {
                                 }
                                 shipIsHit=false;
                                 shipHits=0;
+                                //addCoordinatesNearDeadShipsToUsedCoordinates();
                                 damagedShipCoordinates.clear();
                             }
                             else{
@@ -211,7 +220,7 @@ class PlayerAI {
                             usedCoordinates.add(avaibleOptions.get(randOption));
                             endOfTurn=true;
                         }
-                        if (checkIfCoordinateIsUnique(avaibleOptions.get(randOption),(byte)1)==0 && !endOfTurn){                            //miss
+                        if (checkIfCoordinateIsUnique(avaibleOptions.get(randOption),1)==0 && !endOfTurn){                            //miss
                             gameField.setButton(avaibleOptions.get(randOption)[0],avaibleOptions.get(randOption)[1],0,1,0);
                             usedCoordinates.add(avaibleOptions.get(randOption));
                             endOfTurn=true;
@@ -250,8 +259,8 @@ class PlayerAI {
                 }
                 int randOption = random.nextInt(2);
                 if (avaibleOptions.get(randOption)[0]>=0 && avaibleOptions.get(randOption)[1]>=0 && avaibleOptions.get(randOption)[0]<10 && avaibleOptions.get(randOption)[1]<10){
-                    if (checkIfCoordinateIsUnique(avaibleOptions.get(randOption),(byte)2)==0){
-                        if (checkIfCoordinateIsUnique(avaibleOptions.get(randOption),(byte)1)==1){                                      //hit
+                    if (checkIfCoordinateIsUnique(avaibleOptions.get(randOption),2)==0){
+                        if (checkIfCoordinateIsUnique(avaibleOptions.get(randOption),1)==1){                                      //hit
                             gameField.setButton(avaibleOptions.get(randOption)[0],avaibleOptions.get(randOption)[1],0,1,1);
                             damagedShipCoordinates.add(avaibleOptions.get(randOption));
                             int shipIsDestroyed = enemyShips.deleteOneShipBlock(avaibleOptions.get(randOption));
@@ -261,6 +270,7 @@ class PlayerAI {
                                 }
                                 shipIsHit=false;
                                 shipHits=0;
+                                //addCoordinatesNearDeadShipsToUsedCoordinates();
                                 damagedShipCoordinates.clear();
                             }
                             else{
@@ -270,7 +280,7 @@ class PlayerAI {
                             usedCoordinates.add(avaibleOptions.get(randOption));
                             endOfTurn=true;
                         }
-                        if (checkIfCoordinateIsUnique(avaibleOptions.get(randOption),(byte)1)==0 && !endOfTurn){                        //miss
+                        if (checkIfCoordinateIsUnique(avaibleOptions.get(randOption),1)==0 && !endOfTurn){                        //miss
                             gameField.setButton(avaibleOptions.get(randOption)[0],avaibleOptions.get(randOption)[1],0,1,0);
                             usedCoordinates.add(avaibleOptions.get(randOption));
                             endOfTurn=true;
@@ -279,11 +289,46 @@ class PlayerAI {
                 }
             }
         }
+        aiTurnIsGoing = false;
+        gameField.setTurnState(aiTurnIsGoing,side);
         if (enemyShips.getSize()<1){
             gameField.setGameEnded();
             JOptionPane.showMessageDialog(null,
                     "Победил компьютер!", "Конец игры",
                     JOptionPane.PLAIN_MESSAGE);
+        }
+    }
+
+    void addCoordinatesNearDeadShipsToUsedCoordinates(){
+        for (int i=0; i<damagedShipCoordinates.size(); i++){
+            int[]temp = new int[2];
+            temp[0]=damagedShipCoordinates.get(i)[0];
+            temp[1]=damagedShipCoordinates.get(i)[1];
+            temp[0]=temp[0]+1;
+            if (temp[0]>=0 && temp[0]<=9 && temp[1]>=0 && temp[1]<=9){
+                if (checkIfCoordinateIsUnique(temp,2)==0){
+                    usedCoordinates.add(temp);
+                }
+            }
+            temp[0]=temp[0]-2;
+            if (temp[0]>=0 && temp[0]<=9 && temp[1]>=0 && temp[1]<=9){
+                if (checkIfCoordinateIsUnique(temp,2)==0){
+                    usedCoordinates.add(temp);
+                }
+            }
+            temp[0]=temp[0]+1;
+            temp[1]=temp[1]+1;
+            if (temp[0]>=0 && temp[0]<=9 && temp[1]>=0 && temp[1]<=9){
+                if (checkIfCoordinateIsUnique(temp,2)==0){
+                    usedCoordinates.add(temp);
+                }
+            }
+            temp[1]=temp[1]-2;
+            if (temp[0]>=0 && temp[0]<=9 && temp[1]>=0 && temp[1]<=9){
+                if (checkIfCoordinateIsUnique(temp,2)==0){
+                    usedCoordinates.add(temp);
+                }
+            }
         }
     }
 }

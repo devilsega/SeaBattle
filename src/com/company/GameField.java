@@ -26,13 +26,24 @@ class GameField extends JFrame{
     private JPanel main = new JPanel();
     private JPanel setupField = new JPanel();
     private JPanel setupButtonsField = new JPanel();
-    private SetupInteraction setupListener = new SetupInteraction();
-    private GameInteraction gameListener = new GameInteraction(0);
+    private PlayerHuman playerHuman;
     private Fleet firstPlayerCoords, secondPlayerCoords;
     private PlayerAI computer;
     private boolean gameEnded=false;
+    private boolean firstPlayerTurnIsGoing=true, secontPlayerTurnIsGoing=false;
+    private int typeOfGame;
+    private int gamestage=0;
 
-    void initField()
+    GameField (int type){
+        typeOfGame=type;
+        if (typeOfGame==0){
+            playerHuman= new PlayerHuman(0);
+            playerHuman.setGameField(this);
+        }
+        initField();
+    }
+
+    private void initField()
     {
         gameField.setLayout(fl);
         computerField.setLayout(gl);
@@ -41,7 +52,7 @@ class GameField extends JFrame{
         setupButtonsField.setLayout(fl);
         main.setLayout(gbl);
 
-        setupListener.setGameField(this);                               //привязка классов друг к другу
+        playerHuman.setGameField(this);                               //привязка классов друг к другу
 
         gameField.add(playerField);
         for (int i=0; i<10; i++){
@@ -49,7 +60,7 @@ class GameField extends JFrame{
                 playerArray[i][j] = new JButton();
                 playerArray[i][j].setPreferredSize(new Dimension(40, 40));
                 playerArray[i][j].setName(Integer.toString(i)+Integer.toString(j));
-                playerArray[i][j].addActionListener(setupListener);
+                playerArray[i][j].addActionListener(playerHuman);
                 playerField.add(playerArray[i][j]);
             }
         }
@@ -60,7 +71,7 @@ class GameField extends JFrame{
                 enemyArray[i][j] = new JButton();
                 enemyArray[i][j].setPreferredSize(new Dimension(40, 40));
                 enemyArray[i][j].setName(Integer.toString(i)+Integer.toString(j));
-                enemyArray[i][j].addActionListener(gameListener);
+                enemyArray[i][j].addActionListener(playerHuman);
                 computerField.add(enemyArray[i][j]);
             }
         }
@@ -69,7 +80,7 @@ class GameField extends JFrame{
         for (int i=0; i<shipNamesRu.length; i++){
             ship[i] = new JButton(shipNamesRu[i]);
             ship[i].setName(shipNamesEn[i]);
-            ship[i].addActionListener(setupListener);
+            ship[i].addActionListener(playerHuman);
             setupField.add(ship[i]);
         }
 
@@ -91,14 +102,14 @@ class GameField extends JFrame{
                 for (int i=0; i<ship.length; i++){
                     ship[i].setEnabled(true);
                 }
-                setupListener.resetShipCoordinate();
+                playerHuman.resetShipCoordinate();
                 firstPlayerCoords.clearShipCoordinate();
             }
         });
 
         startGame.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                int endOfPlacing = setupListener.getFinishShipPlacement();
+                int endOfPlacing = playerHuman.getFinishShipPlacement();
 
                 if (endOfPlacing == 1){
                     /*try
@@ -123,6 +134,7 @@ class GameField extends JFrame{
                     computerField.setEnabled(true);
                     mainFrame.pack();
                     mainFrame.setLocationRelativeTo(null);
+                    gamestage=1;
                     playerAi();
                 }
                 /*if (endOfPlacing != 1){
@@ -181,11 +193,10 @@ class GameField extends JFrame{
         }
     }
     private void playerAi(){                            //метод инициализации логики ИИ
-        computer = new PlayerAI();
+        computer = new PlayerAI(1);
         computer.setGameField(this);
-        gameListener.setGameField(this);
         computer.initAiGame();
-        gameListener.linkToShipCoords(firstPlayerCoords, secondPlayerCoords);
+        playerHuman.linkToShipCoords(firstPlayerCoords, secondPlayerCoords);
         computer.linkToEnemyShipCoords(firstPlayerCoords);
 
         /*System.out.println("");
@@ -229,6 +240,39 @@ class GameField extends JFrame{
         }
         gameEnded=true;
     }
+
+    boolean getTurnState(int side){
+        boolean temp=false;
+        switch (side){
+            case (0):{
+                temp=firstPlayerTurnIsGoing;
+                break;
+            }
+            case (1):{
+                temp=secontPlayerTurnIsGoing;
+                break;
+            }
+        }
+        return temp;
+    }
+
+    void setTurnState(boolean temp, int side){
+        switch (side){
+            case (0):{
+                firstPlayerTurnIsGoing=temp;
+                break;
+            }
+            case (1):{
+                secontPlayerTurnIsGoing=temp;
+                break;
+            }
+        }
+    }
+
+    int getGamestage(){
+        return gamestage;
+    }
+
     boolean getGameEnded(){
         return gameEnded;
     }

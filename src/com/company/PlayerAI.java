@@ -1,3 +1,11 @@
+/*
+
+
+//
+//Одиночный модуль требует полной переделки
+//
+
+
 package com.company;
 
 import javax.swing.*;
@@ -332,3 +340,4 @@ class PlayerAI {
         }
     }
 }
+*/

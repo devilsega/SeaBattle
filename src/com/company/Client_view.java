@@ -4,83 +4,68 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
-class GameField extends JFrame{
+class Client_view implements Runnable{
 
+    private final String VERSION;
     private JButton[][] playerArray = new JButton[10][10];
     private JButton[][] enemyArray = new JButton[10][10];
     private String [] shipNamesRu = {"5-палубный","4-палубный","3-палубный","3-палубный","2-палубный","2-палубный"};
     private String [] shipNamesEn = {"fiveDeck1","fourDeck1","threeDeck1","threeDeck2","twoDeck1","twoDeck2"};
     private JButton [] ship = new JButton[6];
-    private JFrame mainFrame = new JFrame("Морской Бой v.0.5");
-    private FlowLayout fl = new FlowLayout(FlowLayout.LEADING, 5, 5);
+    private JFrame mainFrame = new JFrame();
+    private FlowLayout fl = new FlowLayout(FlowLayout.CENTER, 5, 5);
     private GridLayout gl = new GridLayout(10, 10);
-    private GridBagLayout gbl = new GridBagLayout();
-    private GridBagConstraints c = new GridBagConstraints();
     private JPanel gameField = new JPanel();
-    private JPanel computerField = new JPanel();
+    private JPanel enemyField = new JPanel();
     private JPanel playerField = new JPanel();
     private JPanel main = new JPanel();
     private JPanel setupField = new JPanel();
     private JPanel setupButtonsField = new JPanel();
-    private PlayerHuman playerHuman;
-    private Fleet firstPlayerCoords, secondPlayerCoords;
-    private PlayerAI computer;
-    private boolean gameEnded=false;
-    private boolean firstPlayerTurnIsGoing=true, secontPlayerTurnIsGoing=false;
-    private int typeOfGame;
-    private int gamestage=0;
+    private Client_listener clientListener;
+    private JPanel messagePanel = new JPanel();
+    private JLabel messageLabel = new JLabel();
 
-    GameField (int type){
-        typeOfGame=type;
-        if (typeOfGame==0){
-            playerHuman= new PlayerHuman(0);
-            playerHuman.setGameField(this);
-        }
+    Client_view(Client_listener paramListener, String paramVer){
+        clientListener = paramListener;
+        VERSION=paramVer;
+        mainFrame.setTitle(VERSION);
+    }
+
+    public void run(){
         initField();
     }
 
+    //метод первичной отрисовки игрового поля
     private void initField()
     {
-        gameField.setLayout(fl);
-        computerField.setLayout(gl);
-        playerField.setLayout(gl);
-        setupField.setLayout(fl);
-        setupButtonsField.setLayout(fl);
-        main.setLayout(gbl);
-
-        playerHuman.setGameField(this);                               //привязка классов друг к другу
-
         gameField.add(playerField);
         for (int i=0; i<10; i++){
             for (int j=0; j<10; j++){
                 playerArray[i][j] = new JButton();
                 playerArray[i][j].setPreferredSize(new Dimension(40, 40));
                 playerArray[i][j].setName(Integer.toString(i)+Integer.toString(j));
-                playerArray[i][j].addActionListener(playerHuman);
+                playerArray[i][j].addActionListener(clientListener);
                 playerField.add(playerArray[i][j]);
             }
         }
 
-        gameField.add(computerField);
+        gameField.add(enemyField);
         for (int i=0; i<10; i++){
             for (int j=0; j<10; j++){
                 enemyArray[i][j] = new JButton();
                 enemyArray[i][j].setPreferredSize(new Dimension(40, 40));
                 enemyArray[i][j].setName(Integer.toString(i)+Integer.toString(j));
-                enemyArray[i][j].addActionListener(playerHuman);
-                computerField.add(enemyArray[i][j]);
+                enemyArray[i][j].addActionListener(clientListener);
+                enemyField.add(enemyArray[i][j]);
             }
         }
-        computerField.setVisible(false);
+        enemyField.setVisible(false);
 
         for (int i=0; i<shipNamesRu.length; i++){
             ship[i] = new JButton(shipNamesRu[i]);
             ship[i].setName(shipNamesEn[i]);
-            ship[i].addActionListener(playerHuman);
+            ship[i].addActionListener(clientListener);
             setupField.add(ship[i]);
         }
 
@@ -91,6 +76,7 @@ class GameField extends JFrame{
         setupButtonsField.add(reset);
         setupButtonsField.add(startGame);
 
+        //слушатель кнопки СБРОС
         reset.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 for (int i=0; i<10; i++){
@@ -102,23 +88,15 @@ class GameField extends JFrame{
                 for (int i=0; i<ship.length; i++){
                     ship[i].setEnabled(true);
                 }
-                playerHuman.resetShipCoordinate();
-                firstPlayerCoords.clearShipCoordinate();
+                clientListener.resetShipCoordinate();
             }
         });
 
+        //слушатель кнопки СТАРТ
         startGame.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                int endOfPlacing = playerHuman.getFinishShipPlacement();
-
-                if (endOfPlacing == 1){
-                    /*try
-                    {
-                        TimeUnit.SECONDS.sleep(2);
-                    }
-                    catch(InterruptedException z)
-                    {
-                    }*/
+                if (clientListener.endOfPlacing){
+                    setMessageField("Ожидаем пока оппонент завершит расстановку",0);
                     setupField.setEnabled(false);
                     setupField.setVisible(false);
                     setupButtonsField.setEnabled(false);
@@ -128,31 +106,22 @@ class GameField extends JFrame{
                             playerArray[i][j].setEnabled(false);
                         }
                     }
-                    fl.setHgap(20);
-                    fl.setVgap(20);
-                    computerField.setVisible(true);
-                    computerField.setEnabled(true);
-                    mainFrame.pack();
-                    mainFrame.setLocationRelativeTo(null);
-                    gamestage=1;
-                    playerAi();
+                    clientListener.sendServerMessageReadyToStart();
                 }
-                /*if (endOfPlacing != 1){
-                        System.out.println("Can NOT start");
-                }*/
             }
         });
 
-        c.insets = new Insets(5, 0, 0, 0);
-        c.gridx = 0;
-        c.gridy = 0;
-        main.add(gameField, c);
-        c.gridx = 0;
-        c.gridy = 1;
-        main.add(setupField, c);
-        c.gridx = 0;
-        c.gridy = 2;
-        main.add(setupButtonsField, c);
+        messagePanel.add(messageLabel);
+        gameField.setLayout(fl);
+        setupField.setLayout(fl);
+        enemyField.setLayout(gl);
+        playerField.setLayout(gl);
+        main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
+        main.add(messagePanel);
+        main.add(gameField);
+        main.add(setupField);
+        main.add(setupButtonsField);
+
         mainFrame.getContentPane().add(main);
         mainFrame.pack();
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -160,6 +129,7 @@ class GameField extends JFrame{
         mainFrame.setVisible(true);
     }
 
+    //метод для рисования корабликов на поле
     void setButton(int i, int j, int side, int stage, int hit){
         if (side==0 && stage==0){
             playerArray[i][j].setEnabled(false);
@@ -192,45 +162,32 @@ class GameField extends JFrame{
             enemyArray[i][j].setBackground(Color.black);
         }
     }
-    private void playerAi(){                            //метод инициализации логики ИИ
-        computer = new PlayerAI(1);
-        computer.setGameField(this);
-        computer.initAiGame();
-        playerHuman.linkToShipCoords(firstPlayerCoords, secondPlayerCoords);
-        computer.linkToEnemyShipCoords(firstPlayerCoords);
 
-        /*System.out.println("");
-        System.out.println("END First player coords:  ");
-        for (ArrayList<int[]> arr : firstPlayerCoords.getDetailedShipCoordinates()) {
-            for(int[] zzz : arr){
-                System.out.print(Arrays.toString(zzz));
-            }System.out.println("");
+    void setMessageField(String paramMessage, int paramColor){
+        if (paramColor==0){
+            messageLabel.setForeground(Color.magenta);
+            messageLabel.setText(paramMessage);
         }
-
-        System.out.println("");
-        System.out.println("END Secont player coords: ");
-        for (ArrayList<int[]> arr : secondPlayerCoords.getDetailedShipCoordinates()) {
-            for(int[] zzz : arr){
-                System.out.print(Arrays.toString(zzz));
-            }System.out.println("");
-        }*/
-    }
-
-    void runTheSinglePlayerGame(){                      //метод процесса игры
-        if (!gameEnded){
-            computer.playAi();
+        if (paramColor==1){
+            messageLabel.setForeground(Color.blue);
+            messageLabel.setText(paramMessage);
+        }
+        if (paramColor==2){
+            messageLabel.setForeground(Color.red);
+            messageLabel.setText(paramMessage);
         }
     }
 
-    void setFleet(Fleet temp, int side){
-        if (side==0){
-            firstPlayerCoords = temp;
-        }
-        if (side==1){
-            secondPlayerCoords = temp;
+    void startGamePlay(){
+        if (clientListener.endOfPlacing && clientListener.serverReadyToStartGame){
+            fl.setHgap(20);
+            fl.setVgap(20);
+            enemyField.setVisible(true);
+            enemyField.setEnabled(true);
+            mainFrame.pack();
+            mainFrame.setLocationRelativeTo(null);
         }
     }
-
     void setGameEnded(){
         for (int i=0; i<10; i++){
             for (int j=0; j<10; j++){
@@ -238,42 +195,5 @@ class GameField extends JFrame{
                 enemyArray[i][j].setEnabled(false);
             }
         }
-        gameEnded=true;
-    }
-
-    boolean getTurnState(int side){
-        boolean temp=false;
-        switch (side){
-            case (0):{
-                temp=firstPlayerTurnIsGoing;
-                break;
-            }
-            case (1):{
-                temp=secontPlayerTurnIsGoing;
-                break;
-            }
-        }
-        return temp;
-    }
-
-    void setTurnState(boolean temp, int side){
-        switch (side){
-            case (0):{
-                firstPlayerTurnIsGoing=temp;
-                break;
-            }
-            case (1):{
-                secontPlayerTurnIsGoing=temp;
-                break;
-            }
-        }
-    }
-
-    int getGamestage(){
-        return gamestage;
-    }
-
-    boolean getGameEnded(){
-        return gameEnded;
     }
 }
